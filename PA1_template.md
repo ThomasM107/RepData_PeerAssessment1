@@ -1,19 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 In this project I have imported some data on the number of steps people take during several days. The number of steps in a 5 minute period and the date and time of that period have been recorded. I have explored the data using some simple operations as described below.
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Loading and preprocessing the data
 
-```{r}
 
+```r
 library(ggplot2)
 
 setwd("~/Programming/Johns Hopkins Data Science/5 Reproducible research/Week 2")
@@ -25,47 +18,78 @@ activity <- read.csv("activity.csv", stringsAsFactors = FALSE)
 
 daysteps is the total number of steps on each day (of which there are a total of 61). A histogram of this data is generated as well as the mean and median of this data. Note, that when calculating mean and median I excluded the zero values generated in daysteps by na.rm=TRUE (as these only occur on a subset of 8 days and nowhere else).
 
-```{r, eval= TRUE}
+
+```r
 daysteps <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
 
 hist(daysteps)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 meansteps <- mean(daysteps[daysteps > 0])
 meansteps
 ```
 
-```{r, eval= TRUE}
+```
+## [1] 10766.19
+```
+
+
+```r
 mediansteps <- median(daysteps[daysteps > 0])
 mediansteps
+```
+
+```
+## [1] 10765
 ```
 ## What is the average daily activity pattern?
 
 The next tast was to find the mean number of steps in 5 minute intervals averaged over all days.
-```{r}
+
+```r
 minsteps <- aggregate(steps~interval, activity, mean, na.rm = TRUE)
 ```
 
 This time series was plotted as follows:
-```{r}
+
+```r
 ggplot(minsteps, aes(interval, steps)) + geom_line()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
 The 5 minute interval with the maximum number of steps is:
-```{r, eval = TRUE}
+
+```r
 minsteps[minsteps$steps == max(minsteps$steps),]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 ## Imputing missing values
 The following code was first used to find the total number of rows containing NAs.
 
-```{r, eval = TRUE}
+
+```r
 NAvals <- sapply(activity, function(x) sum(is.na(x)))
 NAvals
 ```
 
+```
+##    steps     date interval 
+##     2304        0        0
+```
+
 To impute these missing values, they were replaced with the previously calcuated mean for that time interval.
 
-```{r}
+
+```r
 ## Creat new data frame in which to impute values
 activeImp <- activity
 
@@ -82,21 +106,40 @@ NAcheck <- sapply(activeImp, function(x) sum(is.na(x)))
 NAcheck
 ```
 
+```
+##    steps     date interval 
+##        0        0        0
+```
+
 
 I next recalculated the histogram, mean and median on the new imputed data set:
 
-```{r}
+
+```r
 daystepsImp <- tapply(activeImp$steps, activeImp$date, sum, na.rm = TRUE)
 
 hist(daystepsImp)
 ```
 
-```{r, eval = TRUE}
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+
+```r
 meanstepsImp <- mean(daystepsImp)
 meanstepsImp
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 medianstepsImp <- median(daystepsImp)
 medianstepsImp
+```
+
+```
+## [1] 10766.19
 ```
 
 These operations have no effect on the mean (as expected), but the median has been slightly adjusted to the mean as it now falls on one the imputed days (all imputed values occur on 8 days which contain all NA values).
@@ -106,7 +149,8 @@ These operations have no effect on the mean (as expected), but the median has be
 
 The final task was to assess how activity varied between weekdays and weekends. To acheive this I first created a new factor variable indicating which day of the week eah recorded date corresponded to, then looped over the data frame identifying which are weekdays and which on weekends.
 
-```{r}
+
+```r
 activeImp$date <- as.Date(activeImp$date)
 weekDayImp <- as.factor(weekdays(activeImp$date))
 
@@ -118,12 +162,12 @@ for (i in 1:nrow(activeImp)){
     activeImp$dayType[i] <- "weekday"
   }
 }
-
 ```
 
 I finally created a time series of the five minute interval averages for weekdays and weekends and plotted them on top of each other using ggplot.
 
-```{r}
+
+```r
 weekDaysteps <- aggregate(steps~interval, data = subset(activeImp, dayType == "weekday"), mean)
 weekEndsteps <- aggregate(steps~interval, data = subset(activeImp, dayType == "weekend"), mean)
 weekDaysteps$dayType = "weekday"
@@ -133,5 +177,7 @@ alldata <- rbind(weekDaysteps, weekEndsteps)
 ## Plot each timeseries
 ggplot(alldata, aes(interval, steps)) + facet_grid(dayType ~ .) + geom_line()
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 It can be seen that weekends and weekdays share a similar peak interval of activity, although the subjects were generally more active throughout the day on weekends.
