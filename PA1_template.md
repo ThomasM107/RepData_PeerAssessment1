@@ -25,7 +25,8 @@ daysteps <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
 hist(daysteps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](PA1_template_files/figure-html/total_steps_per_day-1.png)<!-- -->
+
 
 ```r
 meansteps <- mean(daysteps[daysteps > 0])
@@ -35,7 +36,6 @@ meansteps
 ```
 ## [1] 10766.19
 ```
-
 
 ```r
 mediansteps <- median(daysteps[daysteps > 0])
@@ -59,7 +59,7 @@ This time series was plotted as follows:
 ggplot(minsteps, aes(interval, steps)) + geom_line()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](PA1_template_files/figure-html/mean_steps_per_interval-1.png)<!-- -->
 
 The 5 minute interval with the maximum number of steps is:
 
@@ -121,7 +121,7 @@ daystepsImp <- tapply(activeImp$steps, activeImp$date, sum, na.rm = TRUE)
 hist(daystepsImp)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](PA1_template_files/figure-html/imputed_total_steps_per_day-1.png)<!-- -->
 
 
 ```r
@@ -178,6 +178,6 @@ alldata <- rbind(weekDaysteps, weekEndsteps)
 ggplot(alldata, aes(interval, steps)) + facet_grid(dayType ~ .) + geom_line()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](PA1_template_files/figure-html/mean_steps_per_interval_weekday_vs_weekend-1.png)<!-- -->
 
 It can be seen that weekends and weekdays share a similar peak interval of activity, although the subjects were generally more active throughout the day on weekends.

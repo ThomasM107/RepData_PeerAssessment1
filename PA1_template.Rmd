@@ -25,16 +25,17 @@ activity <- read.csv("activity.csv", stringsAsFactors = FALSE)
 
 daysteps is the total number of steps on each day (of which there are a total of 61). A histogram of this data is generated as well as the mean and median of this data. Note, that when calculating mean and median I excluded the zero values generated in daysteps by na.rm=TRUE (as these only occur on a subset of 8 days and nowhere else).
 
-```{r, eval= TRUE}
+```{r total_steps_per_day, eval= TRUE}
 daysteps <- tapply(activity$steps, activity$date, sum, na.rm = TRUE)
 
 hist(daysteps)
 
-meansteps <- mean(daysteps[daysteps > 0])
-meansteps
 ```
 
 ```{r, eval= TRUE}
+meansteps <- mean(daysteps[daysteps > 0])
+meansteps
+
 mediansteps <- median(daysteps[daysteps > 0])
 mediansteps
 ```
@@ -46,7 +47,7 @@ minsteps <- aggregate(steps~interval, activity, mean, na.rm = TRUE)
 ```
 
 This time series was plotted as follows:
-```{r}
+```{r mean_steps_per_interval}
 ggplot(minsteps, aes(interval, steps)) + geom_line()
 ```
 
@@ -85,7 +86,7 @@ NAcheck
 
 I next recalculated the histogram, mean and median on the new imputed data set:
 
-```{r}
+```{r imputed_total_steps_per_day}
 daystepsImp <- tapply(activeImp$steps, activeImp$date, sum, na.rm = TRUE)
 
 hist(daystepsImp)
@@ -123,7 +124,7 @@ for (i in 1:nrow(activeImp)){
 
 I finally created a time series of the five minute interval averages for weekdays and weekends and plotted them on top of each other using ggplot.
 
-```{r}
+```{r mean_steps_per_interval_weekday_vs_weekend}
 weekDaysteps <- aggregate(steps~interval, data = subset(activeImp, dayType == "weekday"), mean)
 weekEndsteps <- aggregate(steps~interval, data = subset(activeImp, dayType == "weekend"), mean)
 weekDaysteps$dayType = "weekday"
